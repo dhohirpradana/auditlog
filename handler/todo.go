@@ -110,6 +110,14 @@ func (h TodoHandler) CreateTodo(c echo.Context) (err error) {
 	// Create a Todo struct
 	var todo models.Todo
 
+	//err = c.Bind(&todo)
+	//if err != nil {
+	//	resp := models.ErroResponse{
+	//		Message: err.Error(),
+	//	}
+	//	return c.JSON(http.StatusUnprocessableEntity, resp)
+	//}
+
 	err = json.Unmarshal(body, &todo)
 	if err != nil {
 		fmt.Println("Error unmarshalling response body:", err)
@@ -117,7 +125,7 @@ func (h TodoHandler) CreateTodo(c echo.Context) (err error) {
 	}
 
 	if err := validator.Validate(todo); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		return c.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
 	//fmt.Println("Todo:", todo)
