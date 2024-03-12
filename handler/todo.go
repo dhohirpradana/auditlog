@@ -120,7 +120,7 @@ func (h TodoHandler) CreateTodo(c echo.Context) (err error) {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	fmt.Println("Todo:", todo)
+	//fmt.Println("Todo:", todo)
 
 	// Post the Todo to the API using todo struct
 	request, err := http.NewRequest("POST", "https://jsonplaceholder.typicode.com/todos", bytes.NewBuffer(body))
