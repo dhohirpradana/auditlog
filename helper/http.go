@@ -86,7 +86,12 @@ func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
 	auditlog.Request = requestL
 	auditlog.Response = responseL
 
-	go auditlog.StoreToES()
+	go func() {
+		err := auditlog.StoreToES()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}()
 
 	c.Set("Content-Type", contentType)
 

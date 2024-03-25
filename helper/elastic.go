@@ -41,10 +41,20 @@ func getESClient() (*elasticsearch.Client, error) {
 	return es, nil
 }
 
-func (a *Auditlog) StoreToES() {
+func (a *Auditlog) StoreToES() error {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	elasticIndex := os.Getenv("ELASTIC_INDEX")
+
 	es, err := getESClient()
 	if err != nil {
 		fmt.Println(err.Error())
+		return err
 	}
 
 	t := time.Now()
@@ -54,19 +64,21 @@ func (a *Auditlog) StoreToES() {
 	body, err := json.Marshal(a)
 	if err != nil {
 		fmt.Println(err.Error())
+		return err
 	}
 
 	//fmt.Println("Body JSON", string(body))
 
 	// Index the document into Elasticsearch
 	res, err := es.Index(
-		"auditlogs3",
+		elasticIndex,
 		bytes.NewReader(body),
 		es.Index.WithDocumentID(fmt.Sprintf("%d", t.UnixNano())),
 	)
 
 	if err != nil {
 		fmt.Println(err.Error())
+		return err
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -75,12 +87,9 @@ func (a *Auditlog) StoreToES() {
 
 	if res.IsError() {
 		fmt.Println(res.Status())
+		return err
 	}
 
 	fmt.Println("Document indexed successfully.")
-	//fmt.Println("Time:", now)
-	//fmt.Println("Method:", a.Method)
-	//fmt.Println("Url:", a.Url)
-	//fmt.Println("Request:", a.Request)
-	//fmt.Println("Response:", a.Response)
+	return nil
 }
