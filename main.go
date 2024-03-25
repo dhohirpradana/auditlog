@@ -1,33 +1,24 @@
 package main
 
 import (
-	httpHandler "auditlog/handler"
-	"fmt"
-
-	"github.com/labstack/echo/v4"
+	httpHandler "auditlog/helper"
+	"encoding/json"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
-	article := httpHandler.InitArticle()
-	todo := httpHandler.InitTodo()
-	echoServer := echo.New()
+	http := httpHandler.InitHttp()
 
-	// Fetch Articles
-	echoServer.GET("/articles", article.FetchArticles)
+	app := fiber.New(fiber.Config{
+		JSONEncoder: json.Marshal,
+		JSONDecoder: json.Unmarshal,
+	})
 
-	// Fetch Todos
-	echoServer.GET("/todos", todo.FetchTodos)
+	app.All("/", http.HTTP)
 
-	// Fetch Todo by ID
-	echoServer.GET("/todo/:id", todo.GetTodoByID)
+	app.Use(cors.New())
 
-	// Create a new Todo
-	echoServer.POST("/todo", todo.CreateTodo)
-
-	// Start the server
-	err := echoServer.Start(":9090")
-	if err != nil {
-		fmt.Println("Error starting server: ", err)
-		return
-	}
+	log.Fatal(app.Listen(":9090"))
 }
