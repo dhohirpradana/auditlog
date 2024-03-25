@@ -23,7 +23,6 @@ func getESClient() (*elasticsearch.Client, error) {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 
@@ -45,7 +44,6 @@ func (a *Auditlog) StoreToES() error {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 
@@ -53,7 +51,6 @@ func (a *Auditlog) StoreToES() error {
 
 	es, err := getESClient()
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 
@@ -63,13 +60,9 @@ func (a *Auditlog) StoreToES() error {
 
 	body, err := json.Marshal(a)
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 
-	//fmt.Println("Body JSON", string(body))
-
-	// Index the document into Elasticsearch
 	res, err := es.Index(
 		elasticIndex,
 		bytes.NewReader(body),
@@ -77,7 +70,6 @@ func (a *Auditlog) StoreToES() error {
 	)
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 
@@ -86,10 +78,7 @@ func (a *Auditlog) StoreToES() error {
 	}(res.Body)
 
 	if res.IsError() {
-		fmt.Println(res.Status())
 		return err
 	}
-
-	fmt.Println("Document indexed successfully.")
 	return nil
 }
