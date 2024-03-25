@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"io"
 	"net/http"
-	"net/url"
 )
 
 type HttpHandler struct {
@@ -18,25 +17,21 @@ func InitHttp() HttpHandler {
 }
 
 func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
-	_, err = url.ParseRequestURI(c.Query("url"))
+	method := c.Method()
+	body := c.Body()
+	originalURL := c.OriginalURL()
+
+	requestURL, err := extractURL(originalURL)
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnprocessableEntity, err.Error())
 	}
 
-	urlParam := c.Query("url")
-
-	method := c.Method()
-	body := c.Body()
-
-	request, err := http.NewRequest(method, urlParam, bytes.NewReader(body))
+	request, err := http.NewRequest(method, requestURL, bytes.NewReader(body))
 	if err != nil {
-		fmt.Println(err.Error())
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	for key, value := range c.GetReqHeaders() {
-		request.Header[key] = value
-	}
+	modifyRequestHeaders(c, request)
 
 	client := &http.Client{}
 
@@ -58,8 +53,7 @@ func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
 	contentType := response.Header.Get("Content-Type")
 	resBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	var requestL entity.Request
@@ -82,7 +76,7 @@ func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
 	responseL.Header = headerToMap(response.Header)
 
 	auditlog.Method = c.Method()
-	auditlog.Url = urlParam
+	auditlog.Url = requestURL
 	auditlog.Request = requestL
 	auditlog.Response = responseL
 

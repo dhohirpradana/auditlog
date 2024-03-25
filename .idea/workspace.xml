@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="49cb1986-1d04-41bc-88b3-2b0f587a323b" name="Changes" comment="fix">
+    <list default="true" id="49cb1986-1d04-41bc-88b3-2b0f587a323b" name="Changes" comment="fix: cleansing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/helper/elastic.go" beforeDir="false" afterPath="$PROJECT_DIR$/helper/elastic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/helper/http.go" beforeDir="false" afterPath="$PROJECT_DIR$/helper/http.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/helper/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/helper/utils.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +85,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Feat: Improve Code" />
     <MESSAGE value="fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix" />
+    <MESSAGE value="fix: cleansing" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: cleansing" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
