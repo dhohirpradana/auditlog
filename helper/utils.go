@@ -1,22 +1,20 @@
 package helper
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
-	"strings"
 )
 
-func headersToString(headers http.Header) string {
-	var headerStrings []string
-	for key, values := range headers {
-		for _, value := range values {
-			headerStrings = append(headerStrings, fmt.Sprintf("%s: %s", key, value))
-		}
+func parseJSON(jsonStr string) (map[string]interface{}, error) {
+	var data map[string]interface{}
+	err := json.Unmarshal([]byte(jsonStr), &data)
+	if err != nil {
+		return nil, err
 	}
-	return fmt.Sprintf("[%s]", strings.Join(headerStrings, ", "))
+	return data, nil
 }
 
-func toMap(headers http.Header) map[string]string {
+func headerToMap(headers http.Header) map[string]string {
 	headerMap := make(map[string]string)
 	for key, values := range headers {
 		headerMap[key] = values[0] // Assuming only one value per header key

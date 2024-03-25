@@ -66,12 +66,20 @@ func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
 	var responseL entity.Response
 	var auditlog Auditlog
 
-	requestL.Header = toMap(request.Header)
-	requestL.Body = string(c.Body())
+	requestL.Header = headerToMap(request.Header)
 
-	responseL.Data = string(resBody)
+	requestL.Body, _ = parseJSON(string(c.Body()))
+	if requestL.Body == nil {
+		requestL.Body = string(c.Body())
+	}
+
+	responseL.Body, _ = parseJSON(string(resBody))
+	if responseL.Body == nil {
+		responseL.Body = string(resBody)
+	}
+
 	responseL.Code = response.StatusCode
-	responseL.Header = toMap(response.Header)
+	responseL.Header = headerToMap(response.Header)
 
 	auditlog.Method = c.Method()
 	auditlog.Url = urlParam

@@ -2,11 +2,11 @@ package entity
 
 type Request struct {
 	Header any
-	Body   string
+	Body   any
 }
 
 type Response struct {
 	Header any
-	Data   string
+	Body   any
 	Code   int
 }

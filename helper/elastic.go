@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/joho/godotenv"
 	"io"
+	"os"
 	"time"
 )
 
@@ -18,10 +20,17 @@ type Auditlog struct {
 }
 
 func getESClient() (*elasticsearch.Client, error) {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	elasticUrl := os.Getenv("ELASTIC_URL")
+
 	cfg := elasticsearch.Config{
-		Addresses: []string{
-			"https://elasticsearch.bodha.co.id",
-		},
+		Addresses: []string{elasticUrl},
 	}
 	es, err := elasticsearch.NewClient(cfg)
 
@@ -47,11 +56,11 @@ func (a *Auditlog) StoreToES() {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println("Body JSON", string(body))
+	//fmt.Println("Body JSON", string(body))
 
 	// Index the document into Elasticsearch
 	res, err := es.Index(
-		"auditlogs1",
+		"auditlogs3",
 		bytes.NewReader(body),
 		es.Index.WithDocumentID(fmt.Sprintf("%d", t.UnixNano())),
 	)
