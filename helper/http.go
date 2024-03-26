@@ -5,8 +5,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"io"
 	"net/http"
+	"os"
 )
 
 type HttpHandler struct {
@@ -17,6 +19,12 @@ func InitHttp() HttpHandler {
 }
 
 func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
+	elasticIndex := "FALSE"
+	err = godotenv.Load(".env")
+	if err == nil {
+		elasticIndex = os.Getenv("STORE_TO_ELASTIC")
+	}
+
 	method := c.Method()
 	body := c.Body()
 	originalURL := c.OriginalURL()
@@ -80,12 +88,14 @@ func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
 	auditlog.Request = requestL
 	auditlog.Response = responseL
 
-	go func() {
-		err := auditlog.StoreToES()
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-	}()
+	if elasticIndex == "TRUE" {
+		go func() {
+			err := auditlog.StoreToES()
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}()
+	}
 
 	c.Set("Content-Type", contentType)
 
