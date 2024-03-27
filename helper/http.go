@@ -45,7 +45,10 @@ func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
 
 	response, err := client.Do(request)
 	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
+		err := Body.Close()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	}(response.Body)
 
 	if err != nil {
@@ -67,6 +70,8 @@ func (h HttpHandler) HTTP(c *fiber.Ctx) (err error) {
 	var requestL entity.Request
 	var responseL entity.Response
 	var auditlog Auditlog
+
+	requestL.IP = c.IP()
 
 	requestL.Header = headerToMap(request.Header)
 
